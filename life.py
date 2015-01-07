@@ -6,9 +6,11 @@ import copy
 class Application:
     master = None
     canvas = None
-    hor_cells = 250
-    ver_cells = 100
-    cell_width = 5
+    stop_button = None
+    start_button = None
+    hor_cells = 50
+    ver_cells = 50
+    cell_width = 10
     width = hor_cells*(cell_width+1)+1
     height = ver_cells*(cell_width+1)+1
     is_loop = False
@@ -36,16 +38,19 @@ class Application:
             self.canvas.create_line(0, j, self.width, j, fill="grey")
 
     def create_widgets(self):
-        start_button = ttk.Button(self.master, text="Start", command=self.on_start)
-        start_button.grid(row=2, column=3)
-        stop_button = ttk.Button(self.master, text="Stop", command=self.on_stop)
-        stop_button.grid(row=2, column=4)
+        self.start_button = ttk.Button(self.master, text="Start", command=self.on_start)
+        self.start_button.grid(row=2, column=3)
+        self.stop_button = ttk.Button(self.master, text="Stop", state=DISABLED, command=self.on_stop)
+        self.stop_button.grid(row=2, column=4)
         clear_button = ttk.Button(self.master, text="Clear", command=self.on_clear)
         clear_button.grid(row=2, column=5)
 
     def on_start(self):
-        self.is_loop = True
-        self.start_loop()
+        if not self.is_loop:
+            self.is_loop = True
+            self.stop_button["state"] = "enabled"
+            self.start_button["state"] = "disabled"
+            self.start_loop()
 
     def start_loop(self):
         if self.is_loop:
@@ -53,7 +58,11 @@ class Application:
             self.master.after(100, self.start_loop)
 
     def on_stop(self):
-        self.is_loop = False
+        if self.is_loop:
+            self.is_loop = False
+            self.stop_button["state"] = "disabled"
+            self.start_button["state"] = "enabled"
+
 
     def on_clear(self):
         self.clear_cells()
@@ -103,8 +112,12 @@ class Application:
     def add_dot(self, event):
         x = event.x
         y = event.y
-        self.cells[y//(1+self.cell_width)][x//(1+self.cell_width)] = 1
-        self.draw_life()
+        try:
+            if 0 <= x < self.width-1 and 0 <= y < self.height-1:
+                self.cells[y//(1+self.cell_width)][x//(1+self.cell_width)] = 1
+                self.draw_life()
+        except IndexError:
+            print(str(x) + " " + str(y))
 
     def remove_dot(self, event):
         x = event.x
