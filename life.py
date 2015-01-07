@@ -6,9 +6,9 @@ import copy
 class Application:
     master = None
     canvas = None
-    hor_cells = 50
-    ver_cells = 50
-    cell_width = 10
+    hor_cells = 250
+    ver_cells = 100
+    cell_width = 5
     width = hor_cells*(cell_width+1)+1
     height = ver_cells*(cell_width+1)+1
     is_loop = False
@@ -74,7 +74,7 @@ class Application:
                             alive += 1
                     if tmp[h-1][v] == 1:
                         alive += 1
-                if h+1 < len(tmp[h]):
+                if h+1 < len(tmp):
                     if v-1 >= 0:
                         if tmp[h+1][v-1] == 1:
                             alive += 1
